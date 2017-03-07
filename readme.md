@@ -10,7 +10,7 @@ This is a bare bones sample visual that demonstrates what you need to create you
 
 The "Radio Slicer" control simply renders a radio button for every category databound to it. When you click on a radio button the rest of the report will be filtered by that radio button's value.
 
-> If you'd like to just use this visual, then you can download it here: [Download Radio Slicer](https://github.com/jonbgallant/PowerBI-visuals-radioSlicer/releases)
+> If you'd like to just use this visual, then you can download it here: [Download Radio Slicer](https://github.com/jonbgallant/PowerBI-visuals-radioSlicer/blob/master/radioSlicer/dist/radioSlicer.pbiviz)
 
 If you want to learn how to create your own slicer, you can follow along at this blog post: [How to Create a Power BI Slicer with the Power BI Custom Visual SDK](http://blog.jongallant.com/powerbi-custom-slicer)
 
