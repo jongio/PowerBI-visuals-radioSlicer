@@ -4,10 +4,10 @@
     "displayName": "Radio Slicer",
     "guid": "PBI_CV_42039020_12D6_4A8C_9D2B_814D10627A45",
     "visualClassName": "Visual",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "The Radio Slicer control filters a report by the currently selected radio button.",
     "supportUrl": "http://blog.jongallant.com",
-    "gitHubUrl": "http://github.com/jonbgallant/PowerBI-visuals-radioSlicer"
+    "gitHubUrl": "http://github.com/jongio/PowerBI-visuals-radioSlicer"
   },
   "apiVersion": "1.5.0",
   "author": {
