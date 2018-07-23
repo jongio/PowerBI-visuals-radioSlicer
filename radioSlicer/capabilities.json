@@ -38,6 +38,13 @@
                     "type": {
                         "filter": true
                     }
+                },
+                "vertical": {
+                    "displayName": "Vertical",
+                    "description": "If true, the radio buttons will be displayed vertically.",
+                    "type": {
+                        "bool": true
+                    }
                 }
             }
         }

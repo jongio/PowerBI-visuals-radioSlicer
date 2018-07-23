@@ -6,6 +6,8 @@ module powerbi.extensibility.visual {
         private host: IVisualHost;
         private isEventUpdate: boolean = false;
         private lastSelectedValue: string;
+        private settings: any;
+        private prevDataViewObjects: any = {}; // workaround temp variable because the PBI SDK doesn't correctly identify style changes. See getSettings method.
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -14,7 +16,11 @@ module powerbi.extensibility.visual {
         }
 
         public update(options: VisualUpdateOptions) {
-            if (options.type & VisualUpdateType.Data && !this.isEventUpdate) {
+            var dataView = options.dataViews[0];
+
+            var settingsChanged = this.getSettings(dataView.metadata.objects); // workaround because of sdk bug that doesn't notify when only style has changed
+
+            if (settingsChanged && options.type & VisualUpdateType.Data && !this.isEventUpdate) {
                 this.init(options);
             }
         }
@@ -58,7 +64,7 @@ module powerbi.extensibility.visual {
                 radio.value = value;
                 radio.name = "values";
                 radio.onclick = function (ev) {
-                    
+
                     this.isEventUpdate = true; // This is checked in the update method. If true it won't re-render, this prevents and infinite loop
                     this.selectionManager.clear(); // Clean up previous filter before applying another one.
 
@@ -89,7 +95,76 @@ module powerbi.extensibility.visual {
 
                 this.target.appendChild(radio);
                 this.target.appendChild(label);
+                if (this.settings.vertical) {
+                    this.target.appendChild(document.createElement("br"));
+                }
             })
+        }
+
+        /**
+         * Enumerates through the objects defined in the capabilities and adds the properties to the format pane
+         *
+         * @function
+         * @param {EnumerateVisualObjectInstancesOptions} options - Map of defined objects
+         */
+        @logExceptions()
+        public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
+            if (!this.settings) {
+                return;
+            }
+
+            let objectName = options.objectName;
+            let objectEnumeration: VisualObjectInstance[] = [];
+
+            switch (objectName) {
+                case 'general':
+                    objectEnumeration.push({
+                        objectName: objectName,
+                        properties: {
+                            vertical: this.settings.vertical
+                        },
+                        selector: null
+                    });
+                    break;
+            };
+
+            return objectEnumeration;
+        }
+
+        public destroy(): void {
+            //TODO: Perform any cleanup tasks here
+        }
+
+        // Reads in settings values from the DataViewObjects and returns a settings object that the liquidFillGauge library understands
+        @logExceptions()
+        private getSettings(objects: DataViewObjects): boolean {
+            var settingsChanged = false;
+
+            if (typeof this.settings == 'undefined' || (JSON.stringify(objects) !== JSON.stringify(this.prevDataViewObjects))) {
+                this.settings = {
+                    vertical: getValue<boolean>(objects, 'general', 'vertical', false)
+                };
+
+                settingsChanged = true;
+            }
+            this.prevDataViewObjects = objects;
+            return settingsChanged;
+        }
+    }
+    export function logExceptions(): MethodDecorator {
+        return function (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<Function>)
+            : TypedPropertyDescriptor<Function> {
+
+            return {
+                value: function () {
+                    try {
+                        return descriptor.value.apply(this, arguments);
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    }
+                }
+            }
         }
     }
 }
